@@ -4,7 +4,6 @@ use std::io::{Read, Write};
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use rocket::form::validate::{len, range};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Quote {
