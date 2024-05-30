@@ -14,7 +14,9 @@ fn rocket() -> _ {
 
     // Define API configuration here
     let config = Config {
-        allow_post: true
+        allow_post: true,
+        allowed_quote_length: 300,
+        allowed_quotee_length: 50
     };
 
     rocket::build()

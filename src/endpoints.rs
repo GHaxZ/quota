@@ -1,5 +1,6 @@
 use std::io;
 use rocket::{get, post, State};
+use rocket::form::validate::len;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use serde::Serialize;
@@ -43,10 +44,17 @@ pub async fn add_quote(store: &State<RwLock<QuoteStore>>, config: &State<Config>
     }
 
     let mut store = store.write().await;
+
     let quote = Quote {
         quote: new_quote.quote.clone(),
         quotee: new_quote.quotee.clone(),
     };
+
+    if quote.quote.chars().count() > config.allowed_quote_length ||
+        quote.quotee.chars().count() > config.allowed_quotee_length {
+        return Status::PayloadTooLarge
+    }
+
     match store.add_quote(quote) {
         Ok(_) => Status::Created,
         Err(_) => Status::InternalServerError,
