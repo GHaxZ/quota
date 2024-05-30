@@ -1,5 +1,6 @@
 use rocket::{launch, routes};
 use rocket::tokio::sync::RwLock;
+use rocket_cors::{AllowedOrigins, CorsOptions};
 use crate::endpoints::{add_quote, get_all_quotes, get_quote, get_quotes_amount};
 use crate::quote_store::QuoteStore;
 use crate::config::Config;
@@ -12,6 +13,11 @@ mod config;
 fn rocket() -> _ {
     let store = QuoteStore::new("quotes.json").unwrap();
 
+    // Configure cors
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .to_cors().unwrap();
+
     // Define API configuration here
     let config = Config {
         allow_post: true,
@@ -23,4 +29,5 @@ fn rocket() -> _ {
         .manage(RwLock::new(store))
         .manage(config)
         .mount("/", routes![get_quote, get_all_quotes, get_quotes_amount, add_quote])
+        .attach(cors)
 }
