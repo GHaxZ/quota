@@ -1,6 +1,7 @@
 use rocket::{launch, routes};
+use rocket::http::Method;
 use rocket::tokio::sync::RwLock;
-use rocket_cors::{AllowedOrigins, CorsOptions};
+use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
 use crate::endpoints::{add_quote, get_all_quotes, get_quote, get_quotes_amount};
 use crate::quote_store::QuoteStore;
 use crate::config::Config;
@@ -16,6 +17,14 @@ fn rocket() -> _ {
     // Configure cors
     let cors = CorsOptions::default()
         .allowed_origins(AllowedOrigins::all())
+        .allowed_methods(
+            vec![Method::Get, Method::Post, Method::Patch, Method::Options]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+        )
+        .allowed_headers(AllowedHeaders::some(&["Authorization", "Accept", "Content-Type"]))
+        .allow_credentials(true)
         .to_cors().unwrap();
 
     // Define API configuration here
